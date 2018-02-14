@@ -1,0 +1,26 @@
+CREATE TABLE STUDENT
+(
+	Fname		VARCHAR(15)	NOT NULL,
+	Minit		CHAR,
+	Lname		VARCHAR(15)	NOT NULL,
+	Grade		CHAR(9)		NOT NULL,
+	Class		VARCHAR(30),
+	student_number	CHAR(9),
+	PRIMARY KEY(student_number)
+);
+
+CREATE TABLE QUESTION
+(
+	Question		VARCHAR(15)	NOT NULL,
+	Minit		CHAR,
+	Answer		VARCHAR(15)	NOT NULL,
+	Ssn		CHAR(9)		NOT NULL,
+	BDATE	DATE		,
+	Address		VARCHAR(30),
+	Sex		CHAR,
+	Salary		DECIMAL(10, 2),
+	Super_ssn	CHAR(9),
+	Dno		INT		NOT NULL,
+	PRIMARY KEY(Ssn),
+	FOREIGN KEY(Super_ssn) REFERENCES EMPLOYEE(Ssn)
+);
