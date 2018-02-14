@@ -1,6 +1,6 @@
 import logging
 from flask import Flask, render_template, Response, request, redirect, url_for, jsonify
-import pymysql
+# import pymysql
 import json
 import datetime
 import random
