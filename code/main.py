@@ -4,10 +4,31 @@ from flask import Flask, render_template, Response, request, redirect, url_for, 
 import json
 import datetime
 import random
+import MySQLdb
 
-#initializing mysql database connection
-# db = pymysql.connect("localhost", "owner", "", "database")
+#!/usr/bin/python
+import MySQLdb
 
+db = MySQLdb.connect(host="localhost",  # your host
+                     user="charchit",   # username
+                     passwd="yourpass",        # password
+                     db="mathsportsdb") # name of the database
+
+# Create a Cursor object to execute queries.
+cur = db.cursor()
+#query = ("SELECT FIRST FROM students ")
+# Select data from table using SQL query.
+cur.execute("SELECT * FROM students")
+#cur.execute(query)
+
+# print the first and second columns
+for row in cur.fetchall() :
+    print row[0], " ", row[1]
+
+#for (FIRST) in cursor: print ("First Name is".format(FIRST))
+
+
+#cur.close()
 #initializing app
 app = Flask(__name__)
 
