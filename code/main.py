@@ -1,6 +1,6 @@
 import logging
 from flask import Flask, render_template, Response, request, redirect, url_for, jsonify
-# import pymysql
+import pymysql
 import json
 import datetime
 import random
@@ -9,32 +9,31 @@ import MySQLdb
 #!/usr/bin/python
 import MySQLdb
 
-db = MySQLdb.connect(host="localhost",  # your host
-                     user="charchit",   # username
-                     passwd="yourpass",        # password
-                     db="mathsportsdb") # name of the database
+# db = MySQLdb.connect(host="localhost",  # your host
+#                      user="admin",   # username
+#                      passwd="admin",        # password
+#                      db="MathSportsDB") # name of the database
 
-# Create a Cursor object to execute queries.
-cur = db.cursor()
-#query = ("SELECT FIRST FROM students ")
-# Select data from table using SQL query.
-cur.execute("SELECT * FROM students")
-#cur.execute(query)
+db = pymysql.connect("localhost", "admin", "admin", "MathSportsDB")
 
-# print the first and second columns
-for row in cur.fetchall() :
-    print row[0], " ", row[1]
-
-#for (FIRST) in cursor: print ("First Name is".format(FIRST))
-
-
-#cur.close()
 #initializing app
 app = Flask(__name__)
 
 @app.route('/')
 def question():
-	return render_template('question.html')
+    # Create a Cursor object to execute queries.
+    cur = db.cursor()
+    #query = ("SELECT FIRST FROM students ")
+    # Select data from table using SQL query.
+    cur.execute("SELECT question, answer FROM question WHERE question_id = 1;")
+    #cur.execute(query)
+
+    questions=[question[0] for question in cur.description] #return headers with values
+    data = cur.fetchall()
+    data_list=[]
+    for element in data:
+        data_list.append(dict(zip(questions,element)))
+	return render_template('question.html', data=data_list)
 
 @app.route('/checkAnswer/', methods=['POST'])
 def check_answer():

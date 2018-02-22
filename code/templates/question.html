@@ -6,26 +6,29 @@
 </head>
 <body>
   <div class="screen">
-    <ul>
-     <li>{{ answer }}</li>
-   </ul>
-      <form id="form1" action="/checkAnswer/" method=post>
-        4+4= <input name="answer" type="text">
-        <input type="submit">
+    <div id="title">
+      <h1>Math Sports<img id='bball' class="show" src="/static/images/bball.png"></h1>
+    </div>
+    <div class="answer">
+      {% for d in data %}
+      <form id="form1" action="/checkAnswer/" method=post style="font:times;">
+        {{ d.question }} <input class="input_field" name="answer" type="text">
+        <input type="submit" class="submit_button">
       </form>
-      <div>
-        <button class="play_button" style="background-color: blue; postion: absolute;" onclick="playGif()">Play</button>
-      </div>
-      <div>
+      {% endfor %}
+    </div>
+      <div class="animation">
         <img id='start_view' class="show" src="/static/soccer_goal_1.gif">
-      </div>
-      <div>
         <img id="miss" class="hidden" src="/static/soccer_miss.gif">
-      </div>
-      <div>
         <img id="goal" class="hidden" src="/static/soccer_goal.gif">
       </div>
-      </div>
+    <div class="footer">
+      <div id="scoreboard">Score: 8/10</div>
+        <a href="#" class="nav_button">&#8249;</a>
+        <a href="#" class="nav_button">&#8250;</a>
+      <div id="progress">Progress: 10/20</div>
+    </div>
+  </div>
 </body>
 
 <script>
@@ -40,9 +43,129 @@
 
 <style>
 
-.screen {
+html,body {
   width:100%;
   height:100%;
+}
+
+img {
+  border-radius: 30px;
+  top: 50%;
+  left: 50%;
+  max-width: 100%;
+  height: 100%;
+  width: 100%;
+}
+
+#title {
+  position: relative;
+  margin: auto;
+  width: 80%;
+  text-align: center;
+  font-size: .5vw;
+}
+#bball {
+  margin: auto;
+  text-align: center;
+  width: 2vw;
+}
+
+.footer {
+  margin: 10px;
+  text-align: center;
+}
+
+#scoreboard {
+  margin: 15px;
+  margin-left: 15px;
+  border: 2px solid black;
+  border-radius: 15px;
+  padding: 1vw;
+  text-align: center;
+  font-size: 1.5vw;
+  float:left;
+}
+#progress {
+  margin: 15px;
+  margin-right: 15px;
+  border: 2px solid black;
+  border-radius: 15px;
+  padding: 1vw;
+  text-align: center;
+  font-size: 1.5vw;
+  float:right;
+}
+
+.nav_button {
+  text-decoration: none;
+  display: inline-block;
+  padding: 2vw 4vh;
+  background-color: transparent;
+  color: green;
+  border-radius: 50%;
+  margin: auto;
+  border: 2px solid green;
+}
+
+.nav_button:hover {
+  text-decoration: none;
+  display: inline-block;
+  padding: 2vw 4vh;
+  background-color: orange;
+  color: white;
+  border-radius: 50%;
+  margin: auto;
+  border: 2px solid orange;
+}
+
+.screen {
+  position: relative;
+  margin: auto;
+  width: 80%;
+  height: 50%;
+}
+
+.submit_button {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  width: 10vw;
+  height: auto;
+  font-size: 2vw;
+  border-radius: 15px;
+}
+.submit_button:hover {
+  background-color: transparent;
+  color: green;
+  border: 2px solid green;
+}
+
+.input_field {
+  background-color: transparent;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+  color: white;
+  font-size: 5vw;
+  font:times;
+  width: 10vw;
+  text-align: center;
+}
+
+.input_field:focus, textarea:focus {
+    outline: none;
+}
+
+
+.answer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 80%;
+  text-align: center;
+  color: white;
+  font-size: 5vw;
+  font:times;
 }
 
 .hidden {
