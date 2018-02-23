@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS QUESTION (
+  question_id INT(30) NOT NULL AUTO_INCREMENT,
+  question VARCHAR(30) NOT NULL,
+  answer INT(30) NOT NULL,
+  PRIMARY KEY(question_id));
+
+INSERT INTO QUESTION(question, answer) VALUES ('4+4=', 8);
+INSERT INTO QUESTION(question, answer) VALUES ('2+2=', 4);
