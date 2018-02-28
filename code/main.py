@@ -13,6 +13,10 @@ db = pymysql.connect("localhost", "admin", "admin", "MathSportsDB")
 question_number = 1
 
 @app.route('/')
+def start_demo():
+    return render_template('start_demo.html')
+
+@app.route('/question')
 def question():
     global question_number
     # Create a Cursor object to execute queries.

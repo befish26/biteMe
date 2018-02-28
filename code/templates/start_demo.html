@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script> -->
+</head>
+<body>
+  <div class="screen">
+    <div id="title">
+      <h1>Math Sports<img id='bball' class="show" src="/static/images/bball.png?"></h1>
+      <h2>Presented by<img id='bball' class="show" src="/static/images/byteMe_logo.png"></h2>
+    </div>
+    <div style="width: 100%; height: auto; text-align:center;">
+      <a href="/question" class="start_demo_button">START DEMO</a>
+    </div>
+</body>
+
+<script>
+</script>
+
+<style>
+
+html,body {
+  width:100%;
+  height:100%;
+}
+
+img {
+  border-radius: 30px;
+  top: 50%;
+  left: 50%;
+  max-width: 100%;
+  height: 100%;
+  width: 100%;
+}
+
+.start_demo_button {
+  background-color: white;
+  color: orange;
+  border: 2px solid orange;
+  width: 10vw;
+  height: auto;
+  font-size: 2vw;
+  border-radius: 15px;
+  text-decoration: none;
+  padding: 5px;
+  text-align: center;
+  margin:auto;
+}
+
+.start_demo_button:hover {
+  background-color: orange;
+  color: white;
+  border: 2px solid orange;
+}
+
+#title {
+  position: relative;
+  margin: auto;
+  width: 80%;
+  text-align: center;
+  font-size: 3vw;
+}
+#bball {
+  margin: auto;
+  text-align: center;
+  width: 10vw;
+}
+
+.footer {
+  margin: 10px;
+  text-align: center;
+}
+
+#scoreboard {
+  margin: 15px;
+  margin-left: 15px;
+  border: 2px solid black;
+  border-radius: 15px;
+  padding: 1vw;
+  text-align: center;
+  font-size: 1.5vw;
+  float:left;
+}
+#progress {
+  margin: 15px;
+  margin-right: 15px;
+  border: 2px solid black;
+  border-radius: 15px;
+  padding: 1vw;
+  text-align: center;
+  font-size: 1.5vw;
+  float:right;
+}
+
+.nav_button {
+  text-decoration: none;
+  display: inline-block;
+  padding: 2vw 4vh;
+  background-color: transparent;
+  color: green;
+  border-radius: 50%;
+  margin: auto;
+  border: 2px solid green;
+}
+
+.nav_button:hover {
+  text-decoration: none;
+  display: inline-block;
+  padding: 2vw 4vh;
+  background-color: orange;
+  color: white;
+  border-radius: 50%;
+  margin: auto;
+  border: 2px solid orange;
+}
+
+.screen {
+  position: relative;
+  margin: auto;
+  width: 80%;
+  height: 50%;
+}
+
+.submit_button {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  width: 10vw;
+  height: auto;
+  font-size: 2vw;
+  border-radius: 15px;
+}
+.submit_button:hover {
+  background-color: transparent;
+  color: green;
+  border: 2px solid green;
+}
+
+.input_field {
+  background-color: transparent;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+  color: white;
+  font-size: 5vw;
+  font:times;
+  width: 10vw;
+  text-align: center;
+}
+
+.input_field:focus, textarea:focus {
+    outline: none;
+}
+
+
+.answer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 80%;
+  text-align: center;
+  color: white;
+  font-size: 5vw;
+  font:times;
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+</style>
+
+</body>
+</html>

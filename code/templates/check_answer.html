@@ -7,21 +7,23 @@
 <body>
   <div class="screen">
     <div id="title">
-      <h1>Math Sports<img id='bball' class="show" src="/static/images/bball.png?"></h1>
+      <h1>Math Sports<img id='bball' class="show" src="/static/images/bball.png"></h1>
     </div>
     <div class="answer">
       {% for d in data %}
-        {{ d.question }} {{d.answer}}
+        Correct Answer: {{ d.question }} {{d.answer}}
       {% endfor %}
     </div>
-      <div id="container" class="animation">
-        <img id="miss" class="hidden" src="/static/soccer_miss.gif">
-        <img id="goal" class="hidden" src="/static/repeat_goal.gif">
-      </div>
+    <div id="container" class="animation">
+      <img id="miss" class="hidden" src="/static/soccer_miss_2x.gif">
+      <img id="goal_paused" class="hidden" src="/static/images/soccer_goal_6.gif">
+      <img id="goal" class="hidden" src="/static/repeat_goal.gif">
+      <img id="miss_paused" class="hidden" src="/static/images/soccer_miss_8.gif">
+    </div>
     <div class="footer">
       <div id="scoreboard">Score: 8/10</div>
-        <a id="left_nav_button" href="/" class="nav_button">&#8249;</a>
-        <a id="right_nav_button" href="/" class="nav_button">&#8250;</a>
+        <a id="left_nav_button" href="/question" class="nav_button">&#8249;</a>
+        <a id="right_nav_button" href="/question" class="nav_button">&#8250;</a>
       <div id="progress">Progress: 8/10</div>
     </div>
   </div>
@@ -46,10 +48,29 @@ function checkAnswer() {
   console.log('{{ answer}}');
   if('{{ answer }}' == 'True'){
     playGif();
+    stopGoal();
   }
   else{
     playMiss();
+    stopMiss();
   }
+}
+function stopGoal() {
+    setTimeout(function(){
+        document.getElementById("goal").classList.add('hidden');
+        document.getElementById("goal").classList.remove('show');
+        document.getElementById("goal_paused").classList.add('show');
+        document.getElementById("goal_paused").classList.remove('hidden');
+    }, 500);
+}
+
+function stopMiss() {
+    setTimeout(function(){
+        document.getElementById("miss").classList.add('hidden');
+        document.getElementById("miss").classList.remove('show');
+        document.getElementById("miss_paused").classList.add('show');
+        document.getElementById("miss_paused").classList.remove('hidden');
+    }, 500);
 }
 </script>
 
