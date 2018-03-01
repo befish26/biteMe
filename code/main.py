@@ -35,6 +35,10 @@ def question():
 @app.route('/checkAnswer/', methods=['POST'])
 def check_answer():
         global question_number
+        print "Question: ",question_number
+        if(question_number == 10):
+            question_number = 1
+            return render_template('end_demo.html')
 	student_answer = request.form["answer"]
         cur = db.cursor()
         query = "SELECT question, answer FROM question WHERE question_id = {};".format(question_number)
