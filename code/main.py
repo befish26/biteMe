@@ -149,6 +149,12 @@ def teacher_questions():
 @app.route('/question')
 def question():
         global question_number
+        # Get Students Question Number
+        firstCur = db.cursor()
+        QuestionNumberQuery = "SELECT current_question FROM STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+        firstCur.execute(QuestionNumberQuery)
+        questionNumber_set = firstCur.fetchall()
+        question_number = questionNumber_set[0][0]
         # Create a Cursor object to execute queries.
         cur = db.cursor()
         # Select data from table using SQL query.
@@ -230,36 +236,41 @@ def check_answer():
         if(int(student_answer) == int(correct_answer)):
             score += 1
             totalAnswers += 1
-            CorrectQuery = "UPDATE STUDENT_PROGRESS SET correct_answers = {0}, total_answers = {1} WHERE student_id = {2};".format(score, totalAnswers, student_id)
-            thirdCur.execute(CorrectQuery)
             update_progress = "UPDATE student_questions set response = 'correct' where student_id={0} AND question_id={1};".format(student_id, question_number)
             cursor.execute(update_progress)
             question_number += 1
+            percentage = score/float(totalAnswers)
+            CorrectQuery = "UPDATE STUDENT_PROGRESS SET correct_answers = {0}, total_answers = {1}, current_question = {2}, total_percent_correct = {3} WHERE student_id = {4};".format(score, totalAnswers, question_number, percentage, student_id)
+            thirdCur.execute(CorrectQuery)
             print question_number
             print update_progress
             print CorrectQuery
             answer = 'True';
             cursor.close()
             thirdCur.close()
+            db.commit()
             return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
         else:
             answer = 'False';
             totalAnswers += 1
             incorrectAnswers += 1
-            incorrectQuery = "UPDATE STUDENT_PROGRESS SET incorrect_answers = {0}, total_answers = {1} WHERE student_id = {2};".format(incorrectAnswers, totalAnswers, student_id)
+            percentage = score/float(totalAnswers)
             update_progress = "UPDATE student_questions set response = 'incorrect' where student_id={0} AND question_id={1};".format(student_id, question_number)
             cursor.execute(update_progress)
-            thirdCur.execute(incorrectQuery)
             question_number += 1
+            incorrectQuery = "UPDATE STUDENT_PROGRESS SET incorrect_answers = {0}, total_answers = {1}, current_question = {2}, total_percent_correct = {3} WHERE student_id = {4};".format(incorrectAnswers, totalAnswers, question_number, percentage, student_id)
+            thirdCur.execute(incorrectQuery)
             print question_number
             print update_progress
             print incorrectQuery
             cursor.close()
             thirdCur.close()
+            db.commit()
             return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score, totalAnswers=totalAnswers)
     except:
         print "Please enter a number"
         answer = 'False'
+        question_number += 1
         return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score, totalAnswers=totalAnswers)
 
 # def update_incorrect_answer():
