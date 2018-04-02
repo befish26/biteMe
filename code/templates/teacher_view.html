@@ -9,71 +9,14 @@
       <h1>Math Sports<img id='bball' class="show" src="/static/images/bball.png?"></h1>
       <h1>Teacher View</h1>
     </div>
-    <div class="profiles">
-      <h1 style="color:black; font-size: 50px;">Students</h1>
-      {% for d in data %}
-      <!-- <li style="color:black;">{{d.Fname}}</li> -->
-      <div class="student_profile" tabindex="1" onclick="calculate_percentage('{{d.total_percent_correct}}')">
-           <img class="student_photo" src="/static/images/student_photo.png"></img>
-           <b style="color:black; float:left; left-padding: 15px;">{{d.Fname}} {{d.Lname}}</b>
-           <div class="student_information">
-             <div id="row" class="pie_chart percent_progress">{{d.total_percent_correct}}</div>
-             <a href="#">Student Number: {{d.student_id}}</a>
-             <a href="#">Grade: {{d.Grade}}</a>
-             <a href="#">Class: {{d.Class}}</a>
-             <a href="#">Username: {{d.Username}}</a>
-             <a href="#">Password: {{d.Password}}</a>
-             <!-- <a href="#">Score: {{d.total_percent_correct}}</a> -->
-           </div>
-      </div>
-      {% endfor %}
+    <div style="width: 100%; height: auto; text-align:center;">
+      <a href="/student_profiles/" class="login_button"> Students </a>
+      <a href="/teacher_questions/" class="login_button">Questions</a>
     </div>
 
-    <div class="add_student">
-      <h2 style="text-align: center;">Add Student</h2>
-      <form action="/student_profiles/" method="POST">
-        <input class="student_input" type=text size=30 name=first_name placeholder="First Name"></input>
-        <input class="student_input" type=text size=30 name=middle_initial placeholder="Middle Initial"></input>
-        <input class="student_input" type=text size=30 name=last_name placeholder="Last Name"></input>
-        <input class="student_input" type=text size=30 name=grade placeholder="Grade"></input>
-        <input class="student_input" type=text size=30 name=class_teacher placeholder="Class"></input>
-        <input class="student_input" type=text size=30 name=username placeholder="Username"></input>
-        <input class="student_input" type=text size=30 name=password placeholder="Password"></input>
-        <input action="/student_profiles/" style="display: block;text-align: center;margin:auto;"type=submit value=Submit>
-      </form>
-    </div>
-    <a href="/teacher_questions/" style="display: block;text-align: center;margin:auto;">Questions</a>
-
-  <div class="remove_student">
-    <h2 style="text-align: center;">Remove Student</h2>
-    <form action="/student_profiles/" method='POST'>
-      <select name=remove_student class="student_input">
-        <option value="">Student</option>
-        {% for d in data %}
-          <option name="remove_student" value="{{d.student_id}}">{{d.Fname}} {{d.Minit}} {{d.last_name}}</option>
-        {% endfor %}
-      </select>
-      <input style="display: block;text-align: center;margin:auto;"type=submit value=Remove>
-    </form>
-  </div>
   </div>
 </body>
 <script>
-  // var total_percent_correct = "{{data}}";
-//   for (i = 0; i < 10; i++) {
-//     console.log("{{data}}");
-// }
-
-// function calculate_percentage(score) {
-//   degress = 90 + ( 360 * score );
-//   var dom = document.getElementsByClassName('percent_progress');
-//   for (i = 0; i < dom.length; i++) {
-//     dom[i].style.backgroundColor = 'background-image: linear-gradient(' + degress
-//           + ', transparent 50%, white 50%), linear-gradient(90deg, white 50%, transparent 50%);';
-// }
-// }
-
-
 </script>
 
 <style>
@@ -81,6 +24,27 @@
 html,body {
   width:100%;
   height:100%;
+}
+
+.login_button {
+  background-color: white;
+  color: orange;
+  border: 2px solid orange;
+  width: 10vw;
+  height: auto;
+  font-size: 2vw;
+  border-radius: 15px;
+  text-decoration: none;
+  padding: 5px;
+  text-align: center;
+  margin:auto;
+}
+
+
+.login_button:hover {
+  background-color: orange;
+  color: white;
+  border: 2px solid orange;
 }
 
 .student_input {
@@ -119,7 +83,7 @@ html,body {
   border-radius: 10px;
   position: relative;
   margin: auto;
-  margin-top: 1000px;
+  margin-top: 20px;
   margin-bottom: 30px;
   padding-bottom: 30px;
 }
@@ -137,19 +101,6 @@ html,body {
   margin-bottom: 30px;
 }
 
-.remove_student {
-  width: 45%;
-  height: auto;
-  border: 1px solid black;
-  border-radius: 10px;
-  display: block;
-  position: relative;
-  margin: auto;
-  float: right;
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
 .add_question {
   width: 45%;
   height: auto;
@@ -158,7 +109,6 @@ html,body {
   display: block;
   position: relative;
   margin: auto;
-  float: right;
   margin-top: 30px;
   margin-bottom: 50px;
 }
