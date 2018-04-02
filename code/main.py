@@ -17,6 +17,7 @@ app.secret_key = os.urandom(24)
 
 db = pymysql.connect("localhost", "admin", "admin", "MathSportsDB")
 question_number = 1
+student_id = 1
 
 @app.route('/')
 def start_demo():
@@ -175,7 +176,14 @@ def check_answer():
         question_number = 1
         return render_template('end_demo.html')
     student_answer = request.form["answer"]
+    print "Student Answer is:", student_answer
     cur = db.cursor()
+    secondCur = db.cursor()
+    thirdCur = db.cursor()
+    ScoreQuery = "SELECT correct_answers from STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+    secondCur.execute(ScoreQuery)
+    score_set = secondCur.fetchall()
+    score = score_set[0][0]
     query = "SELECT question, answer FROM question WHERE question_id = {};".format(question_number)
     cur.execute(query)
     questions=[question[0] for question in cur.description] #return headers with values
@@ -186,26 +194,37 @@ def check_answer():
     correct_answer = data_list[0]["answer"]
     print 'correct_answer', type(correct_answer)
     print 'student answer', type(student_answer)
+    print "Current Score", score
     cur.close()
     cursor = db.cursor()
-    if(int(student_answer) == int(correct_answer)):
-        update_progress = "UPDATE student_questions set response = 'correct' where student_id=1 AND question_id={};".format(question_number)
-        cursor.execute(update_progress)
-        question_number += 1
-        print question_number
-        print update_progress
-        answer = 'True';
-        cursor.close()
-        return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number)
-    else:
-        answer = 'False';
-        update_progress = "UPDATE student_questions set response = 'incorrect' where student_id=1 AND question_id={};".format(question_number)
-        cursor.execute(update_progress)
-        question_number += 1
-        print question_number
-        print update_progress
-        cursor.close()
-        return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number)
+    try:
+        test_answer = int(student_answer)
+        if(int(student_answer) == int(correct_answer)):
+            score += 1
+            CorrectQuery = "UPDATE STUDENT_PROGRESS SET correct_answers = {0} WHERE student_id = {1};".format(score, student_id)
+            thirdCur.execute(CorrectQuery)
+            update_progress = "UPDATE student_questions set response = 'correct' where student_id=1 AND question_id={};".format(question_number)
+            cursor.execute(update_progress)
+            question_number += 1
+            print question_number
+            print update_progress
+            print CorrectQuery
+            answer = 'True';
+            cursor.close()
+            return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number, score=score)
+        else:
+            answer = 'False';
+            update_progress = "UPDATE student_questions set response = 'incorrect' where student_id=1 AND question_id={};".format(question_number)
+            cursor.execute(update_progress)
+            question_number += 1
+            print question_number
+            print update_progress
+            cursor.close()
+            return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score)
+    except:
+        print "Please enter a number"
+        answer = 'False'
+        return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score)
 
 # def update_incorrect_answer():
 #     cur = db.cursor()

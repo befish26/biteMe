@@ -54,7 +54,7 @@ INSERT INTO STUDENT_PROFILE(Fname, Minit, Lname, Grade, Class, Username, Passwor
 
 CREATE TABLE IF NOT EXISTS STUDENT_PROFILE_PROGRESS (
   progress_id INT(30) NOT NULL,
-  student_id INT(30) NOT NULL,
+  student_id INT(30) NOT NULL
 );
 
 CREATE TABLE STUDENT_PROGRESS
