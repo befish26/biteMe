@@ -160,7 +160,22 @@ def question():
         data_list=[]
         for element in data:
             data_list.append(dict(zip(questions,element)))
-        return render_template('question.html', data=data_list, question_number=question_number)
+
+        # Get score
+        secondCur = db.cursor()
+        thirdCur = db.cursor()
+        TotalAnswersQuery = "SELECT total_answers FROM STUDENT_PROGRESS WHERE student_id = {}".format(student_id)
+        ScoreQuery = "SELECT correct_answers from STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+        secondCur.execute(ScoreQuery)
+        score_set = secondCur.fetchall()
+        score = score_set[0][0]
+        thirdCur.execute(TotalAnswersQuery)
+        answers_set = thirdCur.fetchall()
+        totalAnswers = answers_set[0][0]
+        secondCur.close()
+        thirdCur.close()
+
+        return render_template('question.html', data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
 
 @app.before_request
 def before_request():
@@ -180,10 +195,20 @@ def check_answer():
     cur = db.cursor()
     secondCur = db.cursor()
     thirdCur = db.cursor()
+    fourthCur = db.cursor()
+    fifthCur = db.cursor()
+    TotalAnswersQuery = "SELECT total_answers FROM STUDENT_PROGRESS WHERE student_id = {}".format(student_id)
     ScoreQuery = "SELECT correct_answers from STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+    incorrectAnswersQuery = "SELECT incorrect_answers FROM STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
     secondCur.execute(ScoreQuery)
     score_set = secondCur.fetchall()
     score = score_set[0][0]
+    fourthCur.execute(TotalAnswersQuery)
+    answers_set = fourthCur.fetchall()
+    totalAnswers = answers_set[0][0]
+    fifthCur.execute(incorrectAnswersQuery)
+    incorrectAnswers_set = fifthCur.fetchall()
+    incorrectAnswers = incorrectAnswers_set[0][0]
     query = "SELECT question, answer FROM question WHERE question_id = {};".format(question_number)
     cur.execute(query)
     questions=[question[0] for question in cur.description] #return headers with values
@@ -197,13 +222,17 @@ def check_answer():
     print "Current Score", score
     cur.close()
     cursor = db.cursor()
+    secondCur.close()
+    fourthCur.close()
+    fifthCur.close()
     try:
         test_answer = int(student_answer)
         if(int(student_answer) == int(correct_answer)):
             score += 1
-            CorrectQuery = "UPDATE STUDENT_PROGRESS SET correct_answers = {0} WHERE student_id = {1};".format(score, student_id)
+            totalAnswers += 1
+            CorrectQuery = "UPDATE STUDENT_PROGRESS SET correct_answers = {0}, total_answers = {1} WHERE student_id = {2};".format(score, totalAnswers, student_id)
             thirdCur.execute(CorrectQuery)
-            update_progress = "UPDATE student_questions set response = 'correct' where student_id=1 AND question_id={};".format(question_number)
+            update_progress = "UPDATE student_questions set response = 'correct' where student_id={0} AND question_id={1};".format(student_id, question_number)
             cursor.execute(update_progress)
             question_number += 1
             print question_number
@@ -211,20 +240,27 @@ def check_answer():
             print CorrectQuery
             answer = 'True';
             cursor.close()
-            return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number, score=score)
+            thirdCur.close()
+            return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
         else:
             answer = 'False';
-            update_progress = "UPDATE student_questions set response = 'incorrect' where student_id=1 AND question_id={};".format(question_number)
+            totalAnswers += 1
+            incorrectAnswers += 1
+            incorrectQuery = "UPDATE STUDENT_PROGRESS SET incorrect_answers = {0}, total_answers = {1} WHERE student_id = {2};".format(incorrectAnswers, totalAnswers, student_id)
+            update_progress = "UPDATE student_questions set response = 'incorrect' where student_id={0} AND question_id={1};".format(student_id, question_number)
             cursor.execute(update_progress)
+            thirdCur.execute(incorrectQuery)
             question_number += 1
             print question_number
             print update_progress
+            print incorrectQuery
             cursor.close()
-            return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score)
+            thirdCur.close()
+            return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score, totalAnswers=totalAnswers)
     except:
         print "Please enter a number"
         answer = 'False'
-        return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score)
+        return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score, totalAnswers=totalAnswers)
 
 # def update_incorrect_answer():
 #     cur = db.cursor()
