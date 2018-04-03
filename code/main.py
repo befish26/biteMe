@@ -25,13 +25,16 @@ def start_demo():
 
 @app.route('/login', methods=['GET','POST'])
 def login():
+    global student_id
     if request.method =='POST':
         username_form = str(request.form['username'])
         password_form = str(request.form['password'])
         cur = db.cursor()
         #cursor = mysql.connect().cursor()
-        cur.execute("SELECT Username, Password FROM student_profile WHERE Username= '{}' and Password= '{}';".format(username_form, password_form))
+        cur.execute("SELECT student_id, Username, Password FROM student_profile WHERE Username= '{}' and Password= '{}';".format(username_form, password_form))
         data = cur.fetchone()
+        student_id = data[0]
+        print "STUDENT ID: ", student_id
         print "Works"
         if username_form == 'admin' and password_form == 'admin':
             # return redirect(url_for('teacher_view'))
