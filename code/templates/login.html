@@ -4,14 +4,31 @@
 </head>
 
 <body>
-  <h1> Login </h1>
-<form method="POST">
-        <input type="text" name="username">
-        <input type="password" name="password">
-        <input id="submit_button" type="submit" href="/checklogin">
-</form>
+  <div id="title">
+    <h1>Math Sports<a href="/"><img id='bball' class="show" src="/static/images/bball.png?"></a></h1>
+    <h2>Presented by<img class="show" style="height:250px; width:250px; margin:auto;"src="/static/images/byteMe_logo.png"></h2>
+  </div>
+  <div class="login_area">
+    <h1> Login </h1>
+    <form method="POST">
+      <input type="text" name="username" placeholder="Username" class="login_button">
+      <input type="password" name="password" placeholder="Password" class="login_button">
+      <input id="submit_button" type="submit" href="/checklogin">
+    </form>
+  </div>
 </body>
 <style>
+
+  .login_area {
+      position: relative;
+      margin: auto;
+      width: 80%;
+      height: 50%;
+      align-items: center;
+      text-align: center;
+      display: inline;
+  }
+
   #submit_button {
     background-color: white;
     color: orange;
@@ -24,6 +41,43 @@
     padding: 5px;
     text-align: center;
     margin:auto;
+  }
+
+  #title {
+    position: relative;
+    margin: auto;
+    width: 80%;
+    text-align: center;
+    font-size: 3vw;
+  }
+  #bball {
+    margin: auto;
+    text-align: center;
+    width: 10vw;
+  }
+
+  .login_button {
+    background-color: white;
+    color: orange;
+    border: 2px solid orange;
+    width: 10vw;
+    height: auto;
+    font-size: 2vw;
+    border-radius: 15px;
+    text-decoration: none;
+    padding: 5px;
+    text-align: center;
+    margin:auto;
+  }
+
+  .login_button:hover {
+    background-color: orange;
+    color: white;
+    border: 2px solid orange;
+  }
+
+  .show {
+    display: block;
   }
 </style>
 </html>

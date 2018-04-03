@@ -68,17 +68,16 @@ CREATE TABLE STUDENT_PROGRESS
 );
 
 ALTER TABLE STUDENT_PROGRESS ADD CONSTRAINT FOREIGN KEY(student_id) REFERENCES STUDENT_PROFILE(student_id);
-ALTER TABLE STUDENT_PROGRESS ADD current_question INT(30);
+ALTER TABLE STUDENT_PROGRESS ADD COLUMN current_question INT(30) NOT NULL DEFAULT 1;
 
-INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES (1, 8, 2, 10, 0.8);
-INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES (2, 7, 3, 10, 0.7);
-INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES (3, 8, 2, 10, 0.8);
-INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES (4, 9, 1, 10, 0.9);
+INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES (1, 0, 0, 10, 0.0);
+INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES (2, 0, 0, 10, 0.0);
+INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES (3, 0, 0, 10, 0.0);
+INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES (4, 0, 0, 10, 0.0);
 
 UPDATE STUDENT_PROGRESS SET current_question = 1 where student_id = 1;
 UPDATE STUDENT_PROGRESS SET current_question = 1 where student_id = 2;
 UPDATE STUDENT_PROGRESS SET current_question = 1 where student_id = 3;
 UPDATE STUDENT_PROGRESS SET current_question = 1 where student_id = 4;
-
 
 -- ALTER TABLE student_profile AUTO_INCREMENT = 5;
