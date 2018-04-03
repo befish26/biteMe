@@ -31,17 +31,19 @@ def login():
         password_form = str(request.form['password'])
         cur = db.cursor()
         #cursor = mysql.connect().cursor()
+  
+        print "Works"
+        
+        if username_form == 'admin' and password_form == 'admin':
+            # return redirect(url_for('teacher_view'))
+            return render_template('teacher_view.html')
+        
         cur.execute("SELECT student_id, Username, Password FROM student_profile WHERE Username= '{}' and Password= '{}';".format(username_form, password_form))
         data = cur.fetchone()
         student_id = data[0]
         print "STUDENT ID: ", student_id
-        print "Works"
-        if username_form == 'admin' and password_form == 'admin':
-            # return redirect(url_for('teacher_view'))
-            return render_template('teacher_view.html')
 
-
-        elif data is None:
+        if data is None:
 
             return render_template('login.html')
         else:
