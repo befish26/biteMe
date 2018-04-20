@@ -6,6 +6,7 @@ import datetime
 import random
 import MySQLdb
 import os
+import re
 
 
 
@@ -43,18 +44,73 @@ def login():
         if data is not None:
             student_id = data[0]
         print "STUDENT ID: ", student_id
+        print "data: ", data
 
         if data is None:
-
             return render_template('login.html')
         else:
-            return redirect(url_for('question'))
+            return redirect(url_for('studentView'))
 
     return render_template('login.html')
 
+@app.route('/studentView')
+def studentView():
+    cur = db.cursor()
+    question_set_query = "select * from question_set;"
+    cur.execute(question_set_query)
+    question_set=[question_set[0] for question_set in cur.description] #return headers with values
+    data = cur.fetchall()
+    data_list=[]
+    for element in data:
+        data_list.append(dict(zip(question_set,element)))
+    return render_template('student_view.html', question_set=data_list, student_id=student_id)
 
-#@app.route ('/checklogin', methods = ['GET', 'POST'])
-#def checklogin():
+@app.route('/student_profile/<student_id>', methods=['GET'])
+def student_profile(student_id):
+    cur = db.cursor()
+    query = "Select Fname, student_profile.student_id, Lname, Grade, Class, Username, Password, student_progress.total_percent_correct from student_profile inner join student_progress on student_profile.student_id = student_progress.student_id where student_profile.student_id = {};".format(student_id)
+    cur.execute(query)
+
+    students=[students[0] for students in cur.description]
+    students_data = cur.fetchall()
+    students_list=[]
+    for student in students_data:
+        students_list.append(dict(zip(students,student)))
+
+    return render_template('student_profile.html', data=students_list)
+
+@app.route('/question_set/questions/<question_set_id>')
+def viewQuestionSet(question_set_id):
+    firstCur = db.cursor()
+    QuestionNumberQuery = "SELECT current_question FROM STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+    firstCur.execute(QuestionNumberQuery)
+    questionNumber_set = firstCur.fetchall()
+    question_number = questionNumber_set[0][0]
+
+    cur = db.cursor()
+    question_set_query = "select question, answer from question inner join question_set where question_set.question_set_id = {} and question_id = {};".format(question_set_id, question_number)
+    cur.execute(question_set_query)
+    questions=[question[0] for question in cur.description] #return headers with values
+    data = cur.fetchall()
+    data_list=[]
+    for element in data:
+        data_list.append(dict(zip(questions,element)))
+
+    # Get score
+    secondCur = db.cursor()
+    thirdCur = db.cursor()
+    TotalAnswersQuery = "SELECT total_answers FROM STUDENT_PROGRESS WHERE student_id = {}".format(student_id)
+    ScoreQuery = "SELECT correct_answers from STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+    secondCur.execute(ScoreQuery)
+    score_set = secondCur.fetchall()
+    score = score_set[0][0]
+    thirdCur.execute(TotalAnswersQuery)
+    answers_set = thirdCur.fetchall()
+    totalAnswers = answers_set[0][0]
+    secondCur.close()
+    thirdCur.close()
+
+    return render_template('question.html', data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
 
 @app.route('/student_profiles/', methods=['GET','POST'])
 def student_profiles():
@@ -65,11 +121,16 @@ def student_profiles():
             print "REMOVE STUDENT"
             student_id = request.form['remove_student']
             print "Remove Student #: ", student_id
+            print "Type:", int(student_id) is int
             remove_progress_query = "DELETE FROM STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
             cur.execute(remove_progress_query)
             db.commit()
             remove_profile_query = "DELETE FROM STUDENT_PROFILE WHERE student_id = {};".format(student_id)
             cur.execute(remove_profile_query)
+            db.commit()
+            student_id_int = int(student_id)-1;
+            reset_count_query = "ALTER TABLE student_profile AUTO_INCREMENT = {};".format(student_id)
+            cur.execute(reset_count_query)
             db.commit()
         if('first_name' in request.form):
             print "ADD STUDENT"
@@ -81,26 +142,28 @@ def student_profiles():
             username = request.form['username']
             password = request.form['password']
 
-            add_query = "INSERT INTO STUDENT_PROFILE(Fname, Minit, Lname, Grade, Class, Username, Password) VALUES ('{}', '{}', '{}', {}, '{}', '{}', '{}');".format(first_name, middle_initial, last_name, grade, class_teacher, username, password)
-            cur.execute(add_query)
-            db.commit()
-            print add_query
+            # if(re.search(' ', first_name) == True or re.search(' ', last_name) == True or re.search(' ', grade) == True or re.search(' ', class_teacher) == True or re.search(' ', username) == True):
+            if(re.search(' ', first_name) == True):
+                add_query = "INSERT INTO STUDENT_PROFILE(Fname, Minit, Lname, Grade, Class, Username, Password) VALUES ('{}', '{}', '{}', {}, '{}', '{}', '{}');".format(first_name, middle_initial, last_name, grade, class_teacher, username, password)
+                cur.execute(add_query)
+                db.commit()
+                print add_query
 
-            find_student_id_query = "select count(student_id) from student_profile;"
-            cur.execute(find_student_id_query)
-            db.commit()
+                find_student_id_query = "select count(student_id) from student_profile;"
+                cur.execute(find_student_id_query)
+                db.commit()
 
-            students=[students[0] for students in cur.description]
-            numberOfStudents_query = cur.fetchall()
-            student_list=[]
-            for student in numberOfStudents_query:
-                student_list.append(dict(zip(students,student)))
+                students=[students[0] for students in cur.description]
+                numberOfStudents_query = cur.fetchall()
+                student_list=[]
+                for student in numberOfStudents_query:
+                    student_list.append(dict(zip(students,student)))
 
-            number_of_students = student_list[0]['count(student_id)']
+                number_of_students = student_list[0]['count(student_id)']
 
-            add_student_progress_query = "INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES ({}, 0, 0, 0, 0.0);".format(number_of_students)
-            cur.execute(add_student_progress_query)
-            db.commit()
+                add_student_progress_query = "INSERT INTO STUDENT_PROGRESS(student_id, correct_answers, incorrect_answers, total_answers, total_percent_correct) VALUES ({}, 0, 0, 0, 0.0);".format(number_of_students)
+                cur.execute(add_student_progress_query)
+                db.commit()
 
     print "Display Only"
     cur = db.cursor()
@@ -131,15 +194,20 @@ def teacher_questions():
         question = request.form['question']
         answer = request.form['answer']
         question_type = request.form['category']
-        add_query = "INSERT INTO QUESTION(question, answer, question_type) VALUES ('{}', {}, '{}');".format(question, answer, question_type)
-        cur.execute(add_query)
-        db.commit()
+        if(re.search('[a-zA-Z]', question) == False):
+            add_query = "INSERT INTO QUESTION(question, answer, question_type) VALUES ('{}', {}, '{}');".format(question, answer, question_type)
+            cur.execute(add_query)
+            db.commit()
 
     else:
         for i in request.form:
             delete_query = "delete from question where question_id = {};".format(request.form[i])
             cur.execute(delete_query)
             db.commit()
+            # student_id_int = int(student_id)-1;
+            # reset_count_query = "ALTER TABLE question AUTO_INCREMENT = {};".format(student_id)
+            # cur.execute(reset_count_query)
+            # db.commit()
 
     questions_query = "Select question_id, question, answer, question_type from question;"
     cur.execute(questions_query)
