@@ -40,7 +40,8 @@ def login():
 
         cur.execute("SELECT student_id, Username, Password FROM student_profile WHERE Username= '{}' and Password= '{}';".format(username_form, password_form))
         data = cur.fetchone()
-        student_id = data[0]
+        if data is not None:
+            student_id = data[0]
         print "STUDENT ID: ", student_id
 
         if data is None:
@@ -61,7 +62,7 @@ def student_profiles():
     if(request.method =='POST'):
         print "Post method"
         if('remove_student' in request.form):
-            print "REMOVE QUESTION"
+            print "REMOVE STUDENT"
             student_id = request.form['remove_student']
             print "Remove Student #: ", student_id
             remove_progress_query = "DELETE FROM STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
@@ -71,7 +72,7 @@ def student_profiles():
             cur.execute(remove_profile_query)
             db.commit()
         if('first_name' in request.form):
-            print "ADD QUESTION"
+            print "ADD STUDENT"
             first_name = request.form['first_name']
             middle_initial = request.form['middle_initial']
             last_name = request.form['last_name']
@@ -239,45 +240,48 @@ def check_answer():
     fifthCur.close()
     try:
         test_answer = int(student_answer)
-        if(int(student_answer) == int(correct_answer)):
-            score += 1
-            totalAnswers += 1
-            update_progress = "UPDATE student_questions set response = 'correct' where student_id={0} AND question_id={1};".format(student_id, question_number)
-            cursor.execute(update_progress)
-            question_number += 1
-            percentage = score/float(totalAnswers)
-            CorrectQuery = "UPDATE STUDENT_PROGRESS SET correct_answers = {0}, total_answers = {1}, current_question = {2}, total_percent_correct = {3} WHERE student_id = {4};".format(score, totalAnswers, question_number, percentage, student_id)
-            thirdCur.execute(CorrectQuery)
-            print question_number
-            print update_progress
-            print CorrectQuery
-            answer = 'True';
-            cursor.close()
-            thirdCur.close()
-            db.commit()
-            return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
+        if(int(student_answer) >= 0 and student_answer != "-0"):
+            if(int(student_answer) == int(correct_answer)):
+                score += 1
+                totalAnswers += 1
+                update_progress = "UPDATE student_questions set response = 'correct' where student_id={0} AND question_id={1};".format(student_id, question_number)
+                cursor.execute(update_progress)
+                question_number += 1
+                percentage = score/float(totalAnswers)
+                CorrectQuery = "UPDATE STUDENT_PROGRESS SET correct_answers = {0}, total_answers = {1}, current_question = {2}, total_percent_correct = {3} WHERE student_id = {4};".format(score, totalAnswers, question_number, percentage, student_id)
+                thirdCur.execute(CorrectQuery)
+                print question_number
+                print update_progress
+                print CorrectQuery
+                answer = 'True';
+                cursor.close()
+                thirdCur.close()
+                db.commit()
+                return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
+            else:
+                answer = 'False';
+                totalAnswers += 1
+                incorrectAnswers += 1
+                percentage = score/float(totalAnswers)
+                update_progress = "UPDATE student_questions set response = 'incorrect' where student_id={0} AND question_id={1};".format(student_id, question_number)
+                cursor.execute(update_progress)
+                question_number += 1
+                incorrectQuery = "UPDATE STUDENT_PROGRESS SET incorrect_answers = {0}, total_answers = {1}, current_question = {2}, total_percent_correct = {3} WHERE student_id = {4};".format(incorrectAnswers, totalAnswers, question_number, percentage, student_id)
+                thirdCur.execute(incorrectQuery)
+                print question_number
+                print update_progress
+                print incorrectQuery
+                cursor.close()
+                thirdCur.close()
+                db.commit()
+                return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score, totalAnswers=totalAnswers)
         else:
-            answer = 'False';
-            totalAnswers += 1
-            incorrectAnswers += 1
-            percentage = score/float(totalAnswers)
-            update_progress = "UPDATE student_questions set response = 'incorrect' where student_id={0} AND question_id={1};".format(student_id, question_number)
-            cursor.execute(update_progress)
-            question_number += 1
-            incorrectQuery = "UPDATE STUDENT_PROGRESS SET incorrect_answers = {0}, total_answers = {1}, current_question = {2}, total_percent_correct = {3} WHERE student_id = {4};".format(incorrectAnswers, totalAnswers, question_number, percentage, student_id)
-            thirdCur.execute(incorrectQuery)
-            print question_number
-            print update_progress
-            print incorrectQuery
-            cursor.close()
-            thirdCur.close()
-            db.commit()
-            return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score, totalAnswers=totalAnswers)
+                return render_template('question.html', data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
     except:
         print "Please enter a number"
         answer = 'False'
-        question_number += 1
-        return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number,score=score, totalAnswers=totalAnswers)
+        # question_number += 1
+        return render_template('question.html', data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
 
 # def update_incorrect_answer():
 #     cur = db.cursor()
