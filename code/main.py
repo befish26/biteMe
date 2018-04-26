@@ -190,6 +190,7 @@ def student_profiles():
 @app.route('/teacher_questions/', methods=['GET','POST'])
 def teacher_questions():
     cur = db.cursor()
+    setCur = db.cursor()
     if(request.form.get('question')):
         question = request.form['question']
         answer = request.form['answer']
@@ -198,11 +199,19 @@ def teacher_questions():
             add_query = "INSERT INTO QUESTION(question, answer, question_type) VALUES ('{}', {}, '{}');".format(question, answer, question_type)
             cur.execute(add_query)
             db.commit()
-
-    else:
-        for i in request.form:
-            delete_query = "delete from question where question_id = {};".format(request.form[i])
-            cur.execute(delete_query)
+    if(request.form.get('question_set')):
+        question_set = request.form['question_set']
+        difficulty = request.form['difficulty']
+        question_set_query = "INSERT INTO QUESTION_SET(question_set_name, difficulty) VALUES ('{}', '{}');".format(question_set, difficulty)
+        setCur.execute(question_set_query)
+        db.commit()
+    if(request.form.get('remove_question')):
+            print "REMOVE QUESTION"
+            question_id = request.form['remove_question']
+            print "Remove Question #: ", question_id
+            print "Type:", int(question_id) is int
+            remove_question_query = "DELETE FROM QUESTION WHERE question_id = {};".format(question_id)
+            cur.execute(remove_question_query)
             db.commit()
             # student_id_int = int(student_id)-1;
             # reset_count_query = "ALTER TABLE question AUTO_INCREMENT = {};".format(student_id)
