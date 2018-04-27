@@ -16,7 +16,35 @@ CREATE TABLE IF NOT EXISTS QUESTION_SET (
   question_set_name VARCHAR(60) NOT NULL,
   difficulty VARCHAR(30) NOT NULL,
   PRIMARY KEY(question_set_id));
+
+CREATE TABLE IF NOT EXISTS QUESTION_SET_QUESTIONS (
+  question_set_questions_id INT(30) NOT NULL AUTO_INCREMENT,
+  question_set_id INT(30) NOT NULL,
+  question_id INT(30) NOT NULL,
+  PRIMARY KEY(question_set_questions_id)
 );
+
+CREATE TABLE IF NOT EXISTS STUDENT_QUESTION_SETS (
+  student_question_sets_id INT(30) NOT NULL AUTO_INCREMENT,
+  question_set_id INT(30) NOT NULL,
+  student_id INT(30) NOT NULL,
+  current_question INT(30) NOT NULL DEFAULT 1,
+  num_correct INT(30) NOT NULL DEFAULT 0,
+  num_attempted INT(30) NOT NULL DEFAULT 0,
+  percent_correct FLOAT(30) NOT NULL DEFAULT 0.0,
+  PRIMARY KEY(student_question_sets_id)
+);
+
+INSERT INTO STUDENT_QUESTION_SETS(question_set_id, student_id) VALUES (1, 1);
+INSERT INTO STUDENT_QUESTION_SETS(question_set_id, student_id) VALUES (1, 2);
+INSERT INTO STUDENT_QUESTION_SETS(question_set_id, student_id) VALUES (1, 3);
+
+ALTER TABLE STUDENT_QUESTION_SETS ADD CONSTRAINT FOREIGN KEY(question_set_id) REFERENCES QUESTION_SET(question_set_id);
+ALTER TABLE STUDENT_QUESTION_SETS ADD CONSTRAINT FOREIGN KEY(student_id) REFERENCES STUDENT_PROFILE(student_id);
+
+
+ALTER TABLE QUESTION_SET_QUESTIONS ADD CONSTRAINT FOREIGN KEY(question_set_id) REFERENCES QUESTION_SET(question_set_id);
+ALTER TABLE QUESTION_SET_QUESTIONS ADD CONSTRAINT FOREIGN KEY(question_id) REFERENCES QUESTION(question_id);
 
 ALTER TABLE STUDENT_QUESTIONS ADD CONSTRAINT FOREIGN KEY(student_id) REFERENCES STUDENT_PROGRESS(student_id);
 ALTER TABLE STUDENT_QUESTIONS ADD CONSTRAINT FOREIGN KEY(question_id) REFERENCES QUESTION(question_id);
@@ -36,6 +64,9 @@ INSERT INTO STUDENT_QUESTIONS(question_id, student_id, response) VALUES (2, 2, n
 INSERT INTO STUDENT_QUESTIONS(question_id, student_id, response) VALUES (3, 2, null);
 INSERT INTO STUDENT_QUESTIONS(question_id, student_id, response) VALUES (4, 2, null);
 INSERT INTO STUDENT_QUESTIONS(question_id, student_id, response) VALUES (5, 2, null);
+
+INSERT INTO QUESTION_SET_QUESTIONS(question_set_id, question_id) VALUES (1, 1);
+
 
 INSERT INTO QUESTION(question, answer, question_type) VALUES ('4+4=', 8, "addition");
 INSERT INTO QUESTION(question, answer, question_type) VALUES ('2+2=', 4, "addition");

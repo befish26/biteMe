@@ -128,7 +128,7 @@ def student_profiles():
             remove_profile_query = "DELETE FROM STUDENT_PROFILE WHERE student_id = {};".format(student_id)
             cur.execute(remove_profile_query)
             db.commit()
-            student_id_int = int(student_id)-1;
+            student_id_int = int(student_id)-1
             reset_count_query = "ALTER TABLE student_profile AUTO_INCREMENT = {};".format(student_id)
             cur.execute(reset_count_query)
             db.commit()
@@ -142,7 +142,7 @@ def student_profiles():
             username = request.form['username']
             password = request.form['password']
 
-            # if(re.search(' ', first_name) == True or re.search(' ', last_name) == True or re.search(' ', grade) == True or re.search(' ', class_teacher) == True or re.search(' ', username) == True):
+            # if(re.search('[a-zA-Z]', first_name) == True or re.search('[a-zA-Z]', last_name) == True or re.search('[0-9]', grade) == True or re.search('[a-zA-Z]', class_teacher) == True or re.search('[a-zA-Z]', username) == True): broken
             if(re.search(' ', first_name) == True):
                 add_query = "INSERT INTO STUDENT_PROFILE(Fname, Minit, Lname, Grade, Class, Username, Password) VALUES ('{}', '{}', '{}', {}, '{}', '{}', '{}');".format(first_name, middle_initial, last_name, grade, class_teacher, username, password)
                 cur.execute(add_query)
@@ -191,11 +191,12 @@ def student_profiles():
 def teacher_questions():
     cur = db.cursor()
     setCur = db.cursor()
+    qSetCur = db.cursor()
     if(request.form.get('question')):
         question = request.form['question']
         answer = request.form['answer']
         question_type = request.form['category']
-        if(re.search('[a-zA-Z]', question) == False):
+        if(re.search('[a-zA-Z0-9]', question)): #might have broken RE check
             add_query = "INSERT INTO QUESTION(question, answer, question_type) VALUES ('{}', {}, '{}');".format(question, answer, question_type)
             cur.execute(add_query)
             db.commit()
@@ -217,32 +218,54 @@ def teacher_questions():
             # reset_count_query = "ALTER TABLE question AUTO_INCREMENT = {};".format(student_id)
             # cur.execute(reset_count_query)
             # db.commit()
+    if(request.form.get('add_to_question_set')):
+            print "ADD QUESTION TO SET"
+            questionSet_id = request.form['question_set']
+            print "Question Set #: ", questionSet_id
+            question_id = request.form['question']
+            print "Add Question #: ", question_id
+            add_to_question_set_query = "INSERT INTO QUESTION_SET_QUESTIONS(question_set_id, question_id) VALUES ({},{});".format(questionSet_id,question_id)
+            cur.execute(add_to_question_set_query)
+            db.commit()
 
     questions_query = "Select question_id, question, answer, question_type from question;"
     cur.execute(questions_query)
-
+    
     questions=[question[0] for question in cur.description]
     data = cur.fetchall()
     data_list=[]
     for element in data:
         data_list.append(dict(zip(questions,element)))
 
-    return render_template('teacher_questions.html', questions=data_list)
+    questionSet_query = "Select * from question_set;"
+    qSetCur.execute(questionSet_query)
+
+    
+    question_sets=[question[0] for question in cur.description]
+    data = qSetCur.fetchall()
+    set_list=[]
+    for element in data:
+        set_list.append(dict(zip(questions,element)))
+
+    return render_template('teacher_questions.html', questions=data_list, question_sets=set_list)
 
 @app.route('/question')
 def question():
         global question_number
+        question_set_id = 1
         print "Question number: ", question_number
         # Get Students Question Number
         firstCur = db.cursor()
         QuestionNumberQuery = "SELECT current_question FROM STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+        # QuestionNumberQuery = "SELECT current_question FROM STUDENT_QUESTION_SETS WHERE student_id = {} AND question_set_id = {};".format(student_id, question_set_id)
         firstCur.execute(QuestionNumberQuery)
         questionNumber_set = firstCur.fetchall()
         question_number = questionNumber_set[0][0]
         # Create a Cursor object to execute queries.
         cur = db.cursor()
         # Select data from table using SQL query.
-        query = "SELECT question, answer FROM question WHERE question_id = {};".format(question_number)
+        # query = "SELECT question, answer FROM question WHERE question_id = {};".format(question_number)
+        query = "select question, answer from question left join question_set_questions on question.question_id = question_set_questions.question_id where question_set_questions.question_set_id ={};".format(question_set_id)
         cur.execute(query)
 
         questions=[question[0] for question in cur.description] #return headers with values
@@ -255,7 +278,9 @@ def question():
         secondCur = db.cursor()
         thirdCur = db.cursor()
         TotalAnswersQuery = "SELECT total_answers FROM STUDENT_PROGRESS WHERE student_id = {}".format(student_id)
+        # TotalAnswersQuery = "SELECT num_attempted FROM STUDENT_QUESTION_SETS WHERE student_id = {} AND question_set_id = {};".format(student_id, question_set_id)
         ScoreQuery = "SELECT correct_answers from STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+        # ScoreQuery = "SELECT num_correct FROM STUDENT_QUESTION_SETS WHERE student_id = {} AND question_set_id = {};".format(student_id, question_set_id)
         secondCur.execute(ScoreQuery)
         score_set = secondCur.fetchall()
         score = score_set[0][0]
@@ -276,6 +301,7 @@ def before_request():
 @app.route('/checkAnswer/', methods=['POST'])
 def check_answer():
     global question_number
+    question_set_id = 1
     print "Question: ",question_number
     if(question_number == 10):
         question_number = 1
@@ -288,8 +314,10 @@ def check_answer():
     fourthCur = db.cursor()
     fifthCur = db.cursor()
     TotalAnswersQuery = "SELECT total_answers FROM STUDENT_PROGRESS WHERE student_id = {}".format(student_id)
+    # TotalAnswersQuery = "SELECT num_attempted FROM STUDENT_QUESTION_SETS WHERE student_id = {} AND question_set_id = {};".format(student_id, question_set_id)
     ScoreQuery = "SELECT correct_answers from STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
-    incorrectAnswersQuery = "SELECT incorrect_answers FROM STUDENT_PROGRESS WHERE student_id = {};".format(student_id)
+    # ScoreQuery = "SELECT num_correct FROM STUDENT_QUESTION_SETS WHERE student_id = {} AND question_set_id = {};".format(student_id, question_set_id)
+    incorrectAnswersQuery = "SELECT incorrect_answers FROM STUDENT_PROGRESS WHERE student_id = {};".format(student_id) #Why do we do this?
     secondCur.execute(ScoreQuery)
     score_set = secondCur.fetchall()
     score = score_set[0][0]
@@ -299,7 +327,7 @@ def check_answer():
     fifthCur.execute(incorrectAnswersQuery)
     incorrectAnswers_set = fifthCur.fetchall()
     incorrectAnswers = incorrectAnswers_set[0][0]
-    query = "SELECT question, answer FROM question WHERE question_id = {};".format(question_number)
+    query = "select question, answer from question left join question_set_questions on question.question_id = question_set_questions.question_id where question_set_questions.question_set_id ={};".format(question_set_id)
     cur.execute(query)
     questions=[question[0] for question in cur.description] #return headers with values
     data = cur.fetchall()
@@ -321,29 +349,32 @@ def check_answer():
             if(int(student_answer) == int(correct_answer)):
                 score += 1
                 totalAnswers += 1
-                update_progress = "UPDATE student_questions set response = 'correct' where student_id={0} AND question_id={1};".format(student_id, question_number)
+                update_progress = "UPDATE student_questions set response = 'correct' where student_id={0} AND question_id={1};".format(student_id, question_number) #I think we can delete this
                 cursor.execute(update_progress)
                 question_number += 1
                 percentage = score/float(totalAnswers)
                 CorrectQuery = "UPDATE STUDENT_PROGRESS SET correct_answers = {0}, total_answers = {1}, current_question = {2}, total_percent_correct = {3} WHERE student_id = {4};".format(score, totalAnswers, question_number, percentage, student_id)
+                # CorrectQuery = "UPDATE STUDENT_QUESTION_SETS SET current_question = {}, num_correct = {}, num_attempted = {}, percent_correct = {} WHERE student_id = {} AND question_set_id = {};".format(question_number, score, totalAnswers, percentage, student_id, question_set_id)
+                # How we handle next question/ current question needs to be thought out (questions don't go in order of id nor do they go in order of qsetq id)
                 thirdCur.execute(CorrectQuery)
                 print question_number
                 print update_progress
                 print CorrectQuery
-                answer = 'True';
+                answer = 'True'
                 cursor.close()
                 thirdCur.close()
                 db.commit()
                 return render_template('check_answer.html', answer=answer, data=data_list, question_number=question_number, score=score, totalAnswers=totalAnswers)
             else:
-                answer = 'False';
+                answer = 'False'
                 totalAnswers += 1
                 incorrectAnswers += 1
                 percentage = score/float(totalAnswers)
-                update_progress = "UPDATE student_questions set response = 'incorrect' where student_id={0} AND question_id={1};".format(student_id, question_number)
+                update_progress = "UPDATE student_questions set response = 'incorrect' where student_id={0} AND question_id={1};".format(student_id, question_number) #Again I don't think we need this
                 cursor.execute(update_progress)
                 question_number += 1
                 incorrectQuery = "UPDATE STUDENT_PROGRESS SET incorrect_answers = {0}, total_answers = {1}, current_question = {2}, total_percent_correct = {3} WHERE student_id = {4};".format(incorrectAnswers, totalAnswers, question_number, percentage, student_id)
+                # incorrectQuery = "UPDATE STUDENT_QUESTION_SETS SET current_question = {}, num_attempted = {}, percent_correct = {} WHERE student_id = {} AND question_set_id = {};".format(question_number, totalAnswers, percentage, student_id, question_set_id)
                 thirdCur.execute(incorrectQuery)
                 print question_number
                 print update_progress

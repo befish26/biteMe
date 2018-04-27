@@ -46,6 +46,7 @@
       <input style="display: block;text-align: center;margin:auto;"type=submit value=Add>
     </form>
   </div>
+
   <div class="add_question_set">
     <h2 style="text-align: center;">Add Question Set</h2>
     <form action="/teacher_questions/" method='POST'>
@@ -60,6 +61,25 @@
       <input style="display: block;text-align: center;margin:auto;"type=submit value=Add>
     </form>
   </div>
+
+  <div class="add_to_question_set">
+    <h2 style="text-align: center;">Add to Question Set</h2>
+    <form action="/teacher_questions/" method='POST'>
+      <select name=question_set class="student_input">
+        <option value="">Question Set</option>
+        {% for d in question_sets %}
+          <option name="question_set" value="{{d.question_set_id}}">{{d.question}} {{d.answer}}</option>
+        {% endfor %}
+      </select>
+      <select name=question class="student_input">
+        <option value="">Question</option>
+        {% for d in questions %}
+          <option name="question" value="{{d.question_id}}">{{d.question}} {{d.answer}}</option>
+        {% endfor %}
+      </select>
+      <input style="display: block;text-align: center;margin:auto;"type=submit value=Add>
+    </form>
+    </div>
   </div>
 </body>
 <script>
