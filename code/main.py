@@ -16,13 +16,45 @@ import MySQLdb
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-db = pymysql.connect("localhost", "admin", "admin", "MathSportsDB")
+db = pymysql.connect("localhost", "admin", "admin", "math_sports_db")
 question_number = 1
 student_id = 1
+
 
 @app.route('/')
 def start_demo():
     return render_template('start_demo.html')
+
+@app.route('/forgot', methods = ['GET','POST'])
+def forgot():
+    if request.method =='POST':
+        global student_id
+        username_forgot = str(request.form['fusername'])
+        print username_forgot
+        cursor = db.cursor()
+        # print username_forgot
+        #checkquery ="SELECT student_id FROM student_profile WHERE Username='{}';".format(username_forgot)
+        #cur.execute(checkquery)
+        #data = cur.fetchone()
+        updatequery = "UPDATE student_profile SET forgot = '1' WHERE Username='{}';".format(username_forgot)
+        print updatequery
+        cursor.execute(updatequery)
+        data = cursor.fetchone()
+        db.commit()
+        cursor.close()
+        #db.close()
+        #if data:
+        #    print "DATA IS THERE"
+        #if data is None:
+        #    print "DATA IS NOT THERE"
+
+        #if data:
+        #    student_id = data[0]
+        #print "STUDENT ID:", student_id
+        #print "data:", data
+    return render_template ('forgot_password.html')
+
+
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -52,6 +84,7 @@ def login():
             return redirect(url_for('studentView'))
 
     return render_template('login.html')
+
 
 @app.route('/studentView')
 def studentView():
@@ -178,14 +211,23 @@ def student_profiles():
 
     questions_query = "Select question_id, question, answer from question;"
     cur.execute(questions_query)
-
     questions=[question[0] for question in cur.description]
     data = cur.fetchall()
     data_list=[]
     for element in data:
         data_list.append(dict(zip(questions,element)))
 
-    return render_template('student_profiles.html', data=students_list, questions=data_list)
+#For Notification
+    forgot_query = "Select Username from student_profile WHERE forgot=1;"
+    cur.execute(forgot_query)
+    forgots = [forgot[0] for forgot in cur.description]
+    forgot_data = cur.fetchall()
+    print "FORGOT DATA", forgot_data
+    forgot_list=[]
+    for forgot in forgot_data:
+        forgot_list.append(dict(zip(forgots,forgot)))
+
+    return render_template('student_profiles.html', data=students_list, questions=data_list, forgot_data =forgot_list)
 
 @app.route('/teacher_questions/', methods=['GET','POST'])
 def teacher_questions():
@@ -370,4 +412,4 @@ def check_answer():
 
 if __name__ == "__main__":
     app.run(debug=True)
-    # app.run(threaded=True)
+    #app.run(threaded=True)

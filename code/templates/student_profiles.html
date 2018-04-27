@@ -55,6 +55,15 @@
       <input style="display: block;text-align: center;margin:auto;"type=submit value=Remove>
     </form>
   </div>
+
+
+  <div class="notification">
+    <h2 style="text-align: center;">Forgot Password Notification</h2>
+    {% for d in forgot_data %}
+   <h1> {{d.Username}} </h1>
+
+      {% endfor %}
+      </div>
   </div>
 </body>
 <script>
@@ -197,6 +206,17 @@ html,body {
 }
 
 .student_profile {
+  width: 100%;
+  height: auto;
+  border: 1px solid black;
+  border-radius: 10px;
+  float: left;
+  border: 1px solid black;
+  display: block;
+  position: relative;
+}
+
+.notification {
   width: 100%;
   height: auto;
   border: 1px solid black;
