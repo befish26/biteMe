@@ -14,7 +14,7 @@
     <h1 style="color:black; font-size: 50px; text-align: center;">Questions</h1>
     {% for q in questions %}
     <div class="question_row">
-      <input type="text" style="height:30px; width:30px; opacity: 0;" name="{{q.question_id}}" value="{{q.question_id}}" disabled>{{q.question}} {{q.answer}}</input>
+      <input type="text" style="height:30px; width:30px; opacity: 0;" name="{{q.question_id}}" value="{{q.question_id}}" disabled>{{q.question}} {{q.answer}}   <br><p style="font-size: 15px; margin-top:0px;">{{q.question_set_name}}</p></input>
     </div>
     {% endfor %}
   </div>
@@ -35,14 +35,14 @@
   <div class="add_question">
     <h2 style="text-align: center;">Add Question</h2>
     <form action="/teacher_questions/" method='POST'>
-      <input class="student_input" type=text size=30 name=question placeholder="Question"></input>
-      <input class="student_input" type=text size=30 name=answer placeholder="Answer"></input>
-      <select name=category class="student_input">
+      <select id="selectbox" name=category class="student_input" onchange="selectFunc();">
         <option value="">Category</option>
-        <option value="addition">Addition</option>
-        <option value="subtraction">Subtraction</option>
-        <option value="placeValue">Place Value</option>
+        <option id="addition" value="addition">Addition</option>
+        <option id="subtraction" value="subtraction">Subtraction</option>
+        <option id="placeValue" value="placeValue">Place Value</option>
       </select>
+      <input id="question_input_select" class="student_input" type=text size=30 name=question placeholder="Question"></input>
+      <input class="student_input" type=text size=30 name=answer placeholder="Answer"></input>
       <input style="display: block;text-align: center;margin:auto;"type=submit value=Add>
     </form>
   </div>
@@ -65,16 +65,16 @@
   <div class="add_to_question_set">
     <h2 style="text-align: center;">Add to Question Set</h2>
     <form action="/teacher_questions/" method='POST'>
-      <select name=question_set class="student_input">
+      <select name="add_to_question_set" class="student_input">
         <option value="">Question Set</option>
         {% for d in question_sets %}
-          <option name="question_set" value="{{d.question_set_id}}">{{d.question}} {{d.answer}}</option>
+          <option value="{{d.question_set_id}}">{{d.question}} {{d.answer}} {{d.question_set_id}}</option>
         {% endfor %}
       </select>
-      <select name=question class="student_input">
+      <select name="question_to_set" class="student_input">
         <option value="">Question</option>
         {% for d in questions %}
-          <option name="question" value="{{d.question_id}}">{{d.question}} {{d.answer}}</option>
+          <option value="{{d.question_id}}">{{d.question}} {{d.answer}}</option>
         {% endfor %}
       </select>
       <input style="display: block;text-align: center;margin:auto;"type=submit value=Add>
@@ -83,8 +83,18 @@
   </div>
 </body>
 <script>
+function selectFunc() {
+    var selectionbox = document.getElementById("selectbox");
+    var selectionInput= document.getElementById("question_input_select");
+    var selectedValue = selectionbox.options[selectionbox.selectedIndex].value;
+    if(selectedValue == 'placeValue'){
+      selectionInput.placeholder = "<Written Question> <Number>";
+    }
+    else {
+      selectionInput.placeholder = "<Question> =";
+    }
+   }
 </script>
-
 <style>
 
 html,body {
@@ -101,6 +111,16 @@ html,body {
   position: relative;
   margin: auto;
   text-align: center;
+}
+
+.remove_question {
+  width: 50%;
+  margin: auto;
+}
+
+.add_to_question_set {
+  width: 50%;
+  margin: auto;
 }
 
 .question_row {

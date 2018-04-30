@@ -14,7 +14,7 @@
       <a href="/student_profile/{{student_id}}" class="login_button"> Student Profile </a>
       <h1>Question Sets</h1>
       {% for q in question_set %}
-      <a href="question_set/questions/{{q.question_set_id}}" class="login_button">{{q.question_set_name}}: {{q.difficulty}}</a>
+      <a href="/question_set/questions/{{q.question_set_id}}/{{student_id}}" class="login_button">{{q.question_set_name}}: {{q.difficulty}}</a>
       {%endfor%}
     </div>
 
