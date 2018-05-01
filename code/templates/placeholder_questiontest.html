@@ -8,19 +8,60 @@
   <div class="screen">
     <div id="title">
       <h1>Math Sports<a href="/"><img id='bball' class="show" src="/static/images/bball.png?"></a></h1>
-      <h2>Presented by<img class="show" style="height:250px; width:250px; margin:auto;"src="/static/images/byteMe_logo.png"></h2>
     </div>
-    <div style="width: 100%; height: auto; text-align:center;">
-      <a href="/login" class="login_button"> LOGIN </a>
-      <a href="/question_set/questions/1/1" class="start_demo_button">Guest Login</a>
-    </div>
+    <div class="answer">
+      {% for d in data %}
 
+      <form id="form1" action="/checkAnswer/" method=post style="font:times;">
+        <h6 style="margin-top: 15px; margin-bottom: 0px;">{{d.description[0:-3]}}</h6>
+        <button class="placeholder_button" name="answer" style="margin-top: 0px;">{{ d.question[-3] }}</button>
+        <button class="placeholder_button" name="answer" style="margin-top: 0px;">{{ d.question[-2] }}</button>
+        <button class="placeholder_button" name="answer" style="margin-top: 0px;">{{ d.question[-1] }}</button>
+      </form>
+
+    </div>
+      <div class="animation">
+        <img id='start_view' class="show" src="/static/soccer_goal_1.gif">
+        <img id="miss" class="hidden" src="/static/soccer_miss.gif">
+        <img id="goal" class="hidden" src="/static/soccer_goal.gif">
+      </div>
+    <div class="footer">
+      <div id="scoreboard">Score: {{ score }}/{{ totalAnswers }}</div>
+        <a href="#" class="nav_button">&#8249;</a>
+        <a href="#" class="nav_button">&#8250;</a>
+      <div id="progress">Progress: {{ question_number }}/10</div>
+    </div>
+  {% endfor %}
+  </div>
 </body>
 
 <script>
+// Example angular code
+// var app = angular.module('myApp', []);
+// app.controller('formCtrl', function($scope) {
+//     $scope.checkAnswer = function() {
+//         $scope.user = angular.copy($scope.master);
+//     };
+// });
 </script>
 
 <style>
+
+.placeholder_button{
+  background-color: transparent;
+  top: 9vh;
+  font-size: 15vw;
+  color: orange;
+  border: 1px solid transparent;
+  margin: 0 auto;
+  position: relative;
+  display: inline-block;
+  font-weight: 800;
+}
+
+.placeholder_button:hover {
+  color: green;
+}
 
 html,body {
   width:100%;
@@ -36,57 +77,17 @@ img {
   width: 100%;
 }
 
-.login_button {
-  background-color: white;
-  color: orange;
-  border: 2px solid orange;
-  width: 10vw;
-  height: auto;
-  font-size: 2vw;
-  border-radius: 15px;
-  text-decoration: none;
-  padding: 5px;
-  text-align: center;
-  margin:auto;
-}
-
-.login_button:hover {
-  background-color: orange;
-  color: white;
-  border: 2px solid orange;
-}
-
-.start_demo_button {
-  background-color: white;
-  color: orange;
-  border: 2px solid orange;
-  width: 10vw;
-  height: auto;
-  font-size: 2vw;
-  border-radius: 15px;
-  text-decoration: none;
-  padding: 5px;
-  text-align: center;
-  margin:auto;
-}
-
-.start_demo_button:hover {
-  background-color: orange;
-  color: white;
-  border: 2px solid orange;
-}
-
 #title {
   position: relative;
   margin: auto;
   width: 80%;
   text-align: center;
-  font-size: 3vw;
+  font-size: .5vw;
 }
 #bball {
   margin: auto;
   text-align: center;
-  width: 10vw;
+  width: 2vw;
 }
 
 .footer {

@@ -37,9 +37,9 @@
     </div>
     <div class="footer">
       <div id="scoreboard">Score: {{ score }}/{{ totalAnswers }}</div>
-        <a id="left_nav_button" href="/question/{{student_id}}" class="nav_button">&#8249;</a>
-        <a id="right_nav_button" href="/question/{{student_id}}" class="nav_button">&#8250;</a>
-      <div id="progress">Progress: {{ question_number }}/10</div>
+        <a id="left_nav_button" href="/question/{{student_id}}/{{question_set_id}}" class="nav_button">&#8249;</a>
+        <a id="right_nav_button" href="/question/{{student_id}}/{{question_set_id}}" class="nav_button">&#8250;</a>
+      <div id="progress">Progress: {{ question_number%10 }}/10</div>
     </div>
   </div>
 

@@ -8,20 +8,21 @@
   <div class="screen">
     <div id="title">
       <h1>Math Sports<a href="/"><img id='bball' class="show" src="/static/images/bball.png?"></a></h1>
+      <h2>Question Set: {{question_set_id}}</h2>
     </div>
     <div class="answer">
       {% for d in data %}
-      {% if d.question_type == 'placevalue' %}
-        <form id="form2" action="/checkAnswer/{{student_id}}" method=post style="font:times;">
+      {% if d.question_type == 'placeValue' %}
+        <form id="form2" action="/checkAnswer/{{student_id}}/{{question_set_id}}" method=post style="font:times;">
           <h6 style="margin-top: 15px; margin-bottom: 0px;">{{d.question[0:-3]}}</h6>
           <button class="placeholder_button" name="answer" value="{{ d.question[-3] }}" style="margin-top: 0px;">{{ d.question[-3] }}</button>
           <button class="placeholder_button" name="answer" value="{{ d.question[-2] }}" style="margin-top: 0px;">{{ d.question[-2] }}</button>
           <button class="placeholder_button" name="answer" value="{{ d.question[-1] }}" style="margin-top: 0px;">{{ d.question[-1] }}</button>
         </form>
       {% else %}
-        <form id="form1" action="/checkAnswer/{{student_id}}" method=post style="font:times;">
+        <form id="form1" action="/checkAnswer/{{student_id}}/{{question_set_id}}" method=post style="font:times;">
           {{ d.question }} <input class="input_field" name="answer" type="text">
-          <input type="submit" action="/checkAnswer/{{student_id}}" class="submit_button">
+          <input type="submit" action="/checkAnswer/{{student_id}}/{{question_set_id}}" class="submit_button">
         </form>
       {% endif %}
 
@@ -45,7 +46,7 @@
       <div id="scoreboard">Score: {{ score }}/{{ totalAnswers }}</div>
         <a href="#" class="nav_button">&#8249;</a>
         <a href="#" class="nav_button">&#8250;</a>
-      <div id="progress">Progress: {{ question_number }}/10</div>
+      <div id="progress">Progress: {{ question_number%10 }}/10</div>
     </div>
   {% endfor %}
   </div>

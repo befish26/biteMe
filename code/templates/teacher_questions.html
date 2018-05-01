@@ -34,6 +34,9 @@
 
   <div class="add_question">
     <h2 style="text-align: center;">Add Question</h2>
+    {% if error_message %}
+    <h2 style="text-align: center; color:red;">{{error_message}}</h2>
+    {%endif%}
     <form action="/teacher_questions/" method='POST'>
       <select id="selectbox" name=category class="student_input" onchange="selectFunc();">
         <option value="">Category</option>
@@ -67,8 +70,8 @@
     <form action="/teacher_questions/" method='POST'>
       <select name="add_to_question_set" class="student_input">
         <option value="">Question Set</option>
-        {% for d in question_sets %}
-          <option value="{{d.question_set_id}}">{{d.question}} {{d.answer}} {{d.question_set_id}}</option>
+        {% for q in question_sets %}
+          <option name="add_to_question_set" value="{{q.question_id}}">{{q.question}} : {{q.answer}}</option>
         {% endfor %}
       </select>
       <select name="question_to_set" class="student_input">

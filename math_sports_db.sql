@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS QUESTION_SET (
   PRIMARY KEY(question_set_id));
 
 CREATE TABLE IF NOT EXISTS QUESTION_SET_QUESTIONS (
-  question_set_questions_id INT(30) NOT NULL AUTO_INCREMENT,
+  question_set_questions_id INT(30) NOT NULL,
   question_set_id INT(30) NOT NULL,
   question_id INT(30) NOT NULL,
   PRIMARY KEY(question_set_questions_id)
