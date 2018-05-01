@@ -11,16 +11,35 @@
     </div>
     <div class="answer">
       {% for d in data %}
-      <form id="form1" action="/checkAnswer/" method=post style="font:times;">
-        {{ d.question }} <input class="input_field" name="answer" type="text">
-        <input type="submit" class="submit_button">
-      </form>
+      {% if d.question_type == 'placevalue' %}
+        <form id="form2" action="/checkAnswer/{{student_id}}" method=post style="font:times;">
+          <h6 style="margin-top: 15px; margin-bottom: 0px;">{{d.question[0:-3]}}</h6>
+          <button class="placeholder_button" name="answer" value="{{ d.question[-3] }}" style="margin-top: 0px;">{{ d.question[-3] }}</button>
+          <button class="placeholder_button" name="answer" value="{{ d.question[-2] }}" style="margin-top: 0px;">{{ d.question[-2] }}</button>
+          <button class="placeholder_button" name="answer" value="{{ d.question[-1] }}" style="margin-top: 0px;">{{ d.question[-1] }}</button>
+        </form>
+      {% else %}
+        <form id="form1" action="/checkAnswer/{{student_id}}" method=post style="font:times;">
+          {{ d.question }} <input class="input_field" name="answer" type="text">
+          <input type="submit" action="/checkAnswer/{{student_id}}" class="submit_button">
+        </form>
+      {% endif %}
 
     </div>
       <div class="animation">
-        <img id='start_view' class="show" src="/static/soccer_goal_1.gif">
-        <img id="miss" class="hidden" src="/static/soccer_miss.gif">
-        <img id="goal" class="hidden" src="/static/soccer_goal.gif">
+        {% if d.question_id % 3 == 0 %}
+        <img id='start_view' class="show" src="/static/animations/soccer_start.gif">
+        <img id="miss" class="hidden" src="/static/animations/soccer_incorrect.gif">
+        <img id="goal" class="hidden" src="/static/animations/soccer_correct.gif">
+        {% elif d.question_id % 3 == 2 %}
+        <img id='start_view' class="show" src="/static/animations/basketball_start.gif">
+        <img id="miss" class="hidden" src="/static/animations/basketball_incorrect.gif">
+        <img id="goal" class="hidden" src="/static/animations/basketball_correct.gif">
+        {% else %}
+        <img id='start_view' class="show" src="/static/animations/hockey_start.gif">
+        <img id="miss" class="hidden" src="/static/animations/hockey_incorrect.gif">
+        <img id="goal" class="hidden" src="/static/animations/hockey_correct.gif">
+        {% endif %}
       </div>
     <div class="footer">
       <div id="scoreboard">Score: {{ score }}/{{ totalAnswers }}</div>
@@ -43,6 +62,22 @@
 </script>
 
 <style>
+
+.placeholder_button{
+  background-color: transparent;
+  top: 9vh;
+  font-size: 15vw;
+  color: orange;
+  border: 1px solid transparent;
+  margin: 0 auto;
+  position: relative;
+  display: inline-block;
+  font-weight: 800;
+}
+
+.placeholder_button:hover {
+  color: green;
+}
 
 html,body {
   width:100%;

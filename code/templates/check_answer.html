@@ -11,65 +11,101 @@
     </div>
     <div class="answer">
       {% for d in data %}
-        Correct Answer: {{ d.question }} {{d.answer}}
+        {% if d.question_type == 'placevalue' %}
+          Correct Answer: {{d.question[0:-3]}} = {{d.answer}}
+          {% else %}
+          Correct Answer: {{d.answer}}
+          {% endif %}
       {% endfor %}
     </div>
     <div id="container" class="animation">
-      <img id="miss" class="hidden" src="/static/soccer_miss_2x.gif">
-      <img id="goal_paused" class="hidden" src="/static/images/soccer_goal_6.gif">
-      <img id="goal" class="hidden" src="/static/repeat_goal.gif">
-      <img id="miss_paused" class="hidden" src="/static/images/soccer_miss_8.gif">
+      <img id="soccer_miss" class="hidden" src="/static/animations/soccer_incorrect.gif">
+      <img id="soccer_goal_paused" class="hidden" src="/static/animations/soccer_correct_end.gif">
+      <img id="soccer_goal" class="hidden" src="/static/animations/soccer_correct.gif">
+      <img id="soccer_miss_paused" class="hidden" src="/static/animations/soccer_incorrect_end.gif">
+
+      <img id="basketball_miss" class="hidden" src="/static/animations/basketball_incorrect.gif">
+      <img id="basketball_goal_paused" class="hidden" src="/static/animations/basketball_correct_end.gif">
+      <img id="basketball_goal" class="hidden" src="/static/animations/basketball_correct.gif">
+      <img id="basketball_miss_paused" class="hidden" src="/static/animations/basketball_incorrect_end.gif">
+
+      <img id="hockey_miss" class="hidden" src="/static/animations/hockey_incorrect.gif">
+      <img id="hockey_goal_paused" class="hidden" src="/static/animations/hockey_correct_end.gif">
+      <img id="hockey_goal" class="hidden" src="/static/animations/hockey_correct.gif">
+      <img id="hockey_miss_paused" class="hidden" src="/static/animations/hockey_incorrect_end.gif">
+
     </div>
     <div class="footer">
       <div id="scoreboard">Score: {{ score }}/{{ totalAnswers }}</div>
-        <a id="left_nav_button" href="/question" class="nav_button">&#8249;</a>
-        <a id="right_nav_button" href="/question" class="nav_button">&#8250;</a>
+        <a id="left_nav_button" href="/question/{{student_id}}" class="nav_button">&#8249;</a>
+        <a id="right_nav_button" href="/question/{{student_id}}" class="nav_button">&#8250;</a>
       <div id="progress">Progress: {{ question_number }}/10</div>
     </div>
   </div>
 
 <script>
-document.getElementById("container").addEventListener("load", checkAnswer);
-document.getElementById("miss").addEventListener("load", checkAnswer);
-document.getElementById("goal").addEventListener("load", checkAnswer);
+// window.onload
+window.onload = function() {
+  "{% for d in data %}"
+    if('{{d.question_id}}' % 3 == 0){
+      var animation_name = 'soccer';
+    }
+    else if('{{d.question_id}}' % 3 == 1){
+      var animation_name = 'hockey';
+    }
+    else if('{{d.question_id}}' % 3 == 2){
+      var animation_name = 'basketball';
+    }
+  '{% endfor %}'
+  document.getElementById("container").addEventListener("load", checkAnswer);
+  document.getElementById(animation_name + "_miss").addEventListener("load", checkAnswer(animation_name));
+  document.getElementById(animation_name + "_goal").addEventListener("load", checkAnswer(animation_name));
+  console.log(animation_name);
+};
+
 var someJavaScriptVar = '{{ answer }}';
 
-function playGif() {
+function playGif(animation_name) {
   console.log("goal");
-  document.getElementById("goal").classList.add('show');
-  document.getElementById("goal").classList.remove('hidden');
+  document.getElementById(animation_name + "_goal").classList.add('show');
+  document.getElementById(animation_name + "_goal").classList.remove('hidden');
+  console.log(animation_name);
 }
-function playMiss() {
+function playMiss(animation_name) {
   console.log("miss");
-  document.getElementById("miss").classList.add('show');
-  document.getElementById("miss").classList.remove('hidden');
+  document.getElementById(animation_name + "_miss").classList.add('show');
+  document.getElementById(animation_name + "_miss").classList.remove('hidden');
+  console.log(animation_name);
 }
-function checkAnswer() {
+function checkAnswer(animation_name) {
   console.log('{{ answer}}');
+  console.log(animation_name);
   if('{{ answer }}' == 'True'){
-    playGif();
-    stopGoal();
+      playGif(animation_name);
+      stopGoal(animation_name);
   }
   else{
-    playMiss();
-    stopMiss();
+    playMiss(animation_name);
+    stopMiss(animation_name);
   }
 }
-function stopGoal() {
+function stopGoal(animation_name) {
     setTimeout(function(){
-        document.getElementById("goal").classList.add('hidden');
-        document.getElementById("goal").classList.remove('show');
-        document.getElementById("goal_paused").classList.add('show');
-        document.getElementById("goal_paused").classList.remove('hidden');
+      console.log(animation_name);
+        document.getElementById(animation_name + "_goal").classList.add('hidden');
+        document.getElementById(animation_name + "_goal").classList.remove('show');
+        document.getElementById(animation_name + "_goal_paused").classList.add('show');
+        document.getElementById(animation_name + "_goal_paused").classList.remove('hidden');
     }, 500);
 }
 
-function stopMiss() {
+function stopMiss(animation_name) {
     setTimeout(function(){
-        document.getElementById("miss").classList.add('hidden');
-        document.getElementById("miss").classList.remove('show');
-        document.getElementById("miss_paused").classList.add('show');
-        document.getElementById("miss_paused").classList.remove('hidden');
+      console.log(animation_name);
+        document.getElementById(animation_name + "_miss").classList.add('hidden');
+        document.getElementById(animation_name + "_miss").classList.remove('show');
+        document.getElementById(animation_name + "_miss_paused").classList.add('show');
+        document.getElementById(animation_name + "_miss_paused").classList.remove('hidden');
     }, 500);
 }
 </script>
