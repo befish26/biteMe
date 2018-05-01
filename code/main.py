@@ -21,7 +21,7 @@ question_number = 1
 assignment_number = 1
 first_question_of_the_set = 1
 student_id = 1
-
+announcement = ''
 
 @app.route('/')
 def start_demo():
@@ -56,7 +56,16 @@ def forgot():
         #print "data:", data
     return render_template ('forgot_password.html')
 
+@app.route('/announce', methods=['GET','POST'])
+def announce():
+    global announcement
 
+    if request.method =='POST':
+        announcement = str(request.form['announcement'])
+        print "announcement: ", announcement
+        return redirect(url_for('student_profiles'))
+
+    return
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -90,6 +99,7 @@ def login():
 @app.route('/studentView/<student_id>')
 def studentView(student_id):
     global question_number
+    global announcement
     cur = db.cursor()
     question_set_query = "select * from question_set;"
     cur.execute(question_set_query)
@@ -98,7 +108,7 @@ def studentView(student_id):
     data_list=[]
     for element in data:
         data_list.append(dict(zip(question_set,element)))
-    return render_template('student_view.html', question_set=data_list, student_id=student_id, current_question=question_number)
+    return render_template('student_view.html', question_set=data_list, student_id=student_id, current_question=question_number, announcement=announcement)
 
 @app.route('/student_profile/<student_id>', methods=['GET'])
 def student_profile(student_id):
@@ -291,6 +301,10 @@ def teacher_questions():
                 question_id = request.form['remove_question']
                 print "Remove Question #: ", question_id
                 print "Type:", int(question_id) is int
+                remove_question_set_questions = "DELETE FROM question_set_questions WHERE question_id = {};".format(question_id)
+                cur.execute(remove_question_set_questions)
+                db.commit()
+
                 remove_question_query = "DELETE FROM QUESTION WHERE question_id = {};".format(question_id)
                 cur.execute(remove_question_query)
                 db.commit()

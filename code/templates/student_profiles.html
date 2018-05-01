@@ -62,11 +62,19 @@
 
   <div class="notification">
     <h2 style="text-align: center;">Forgot Password Notification</h2>
-    {% for d in forgot_data %}
-   <h1> {{d.Username}} </h1>
-
+    {% for f in forgot_data %}
+    <h1 style="text-align: center; color: red;"> {{f.Username}} </h1>
       {% endfor %}
       </div>
+
+  <div class="student_profile" style="margin-top: 40px;margin-bottom: 40px; padding-bottom: 20px; text-align: center;">
+      <h1>Announcements</h1>
+      <form action="/announce" method='POST'>
+        <input class="student_input" type="text" name="announcement" placeholder="Add an announcement here" value="">
+        <input style="display: block;text-align: center;margin:auto;"type=submit>
+      </form>
+  </div>
+
   </div>
 </body>
 <script>

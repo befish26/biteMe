@@ -16,6 +16,18 @@
       {% for q in question_set %}
       <a href="/question_set/questions/{{q.question_set_id}}/{{student_id}}" class="login_button">{{q.question_set_name}}: {{q.difficulty}}</a>
       {%endfor%}
+
+
+      <div class="student_profile" style="margin-top: 40px; padding-bottom: 20px; border: 3px solid black;">
+          <h1>Announcements</h1>
+                {% if announcement %}
+          <li>{{announcement}}</li>
+          {%else%}
+          <li>No new announcements</li>
+                {%endif%}
+      </div>
+
+
     </div>
 
   </div>
